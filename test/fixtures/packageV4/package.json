@@ -1,0 +1,3 @@
+{
+  "cleanDistFiles": ["dist/file1.txt", "files/embed/embed2/*.txt", "!files/embed/*.txt"]
+}
