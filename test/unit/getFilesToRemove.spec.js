@@ -43,6 +43,16 @@ describe('Get files to remove', () => {
     assert.deepEqual(filesToRemove, expectedResult);
   });
 
+  it('should return files inside of embeded directories', async () => {
+    const projectPath = `${rootPath}/packageV1`;
+    const distPaths = [`${projectPath}/files/embed`];
+    const filesToExclude = [`${projectPath}/files/embed/embed2/file3.txt`];
+    const filesToRemove = await getFilesToRemove(projectPath, distPaths, filesToExclude);
+
+    const expectedResult = [`${projectPath}/files/embed/file2.txt`];
+    assert.deepEqual(filesToRemove, expectedResult);
+  });
+
   it("shouldn't return files outside of dist directories", async () => {
     const projectPath = `${rootPath}/packageV5`;
     const filesToRemove = await getFilesToRemove(projectPath, [`${__dirname}/files`]);
