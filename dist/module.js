@@ -1,6 +1,6 @@
 import {extname as $73nkc$extname, posix as $73nkc$posix} from "path";
 import {Reporter as $73nkc$Reporter} from "@parcel/plugin";
-import {readFile as $73nkc$readFile, readdir as $73nkc$readdir, rmdir as $73nkc$rmdir, unlink as $73nkc$unlink, stat as $73nkc$stat} from "fs/promises";
+import {readFile as $73nkc$readFile, rmdir as $73nkc$rmdir, unlink as $73nkc$unlink, stat as $73nkc$stat, readdir as $73nkc$readdir} from "fs/promises";
 import {isDynamicPattern as $73nkc$isDynamicPattern, stream as $73nkc$stream} from "fast-glob";
 
 var $parcel$global =
@@ -95,18 +95,6 @@ var $84aed4f820c8f8ca$exports = {};
         cleanDistFiles.push(...sortedFiles);
     }
     const filesToRemove = new Set([]);
-    // if no configuration is provided, then we cleanup all files that are not contained in the current bundle
-    if ($2984c37e9344dbc1$exports.isEmpty(cleanDistFiles)) {
-        for (const distPath of distPaths){
-            const fileNames = await $73nkc$readdir(distPath); // eslint-disable-line no-await-in-loop
-            fileNames.forEach((fileName)=>{
-                const filePath = $73nkc$posix.join(distPath, fileName);
-                if (filesToExclude.includes(filePath)) return;
-                filesToRemove.add(filePath);
-            });
-        }
-        return Array.from(filesToRemove);
-    }
     /**
    * Checks is path contains any of dist folders
    * @param {String} p file path to be checked
@@ -121,8 +109,8 @@ var $84aed4f820c8f8ca$exports = {};
    */ const isFileExcluded = (fp)=>filesToExclude.includes(fp) || filesToExclude.some((p)=>fp.includes(p) || p.includes(fp)
         )
     ;
-    // when configuration contains only files to exclude, we assume all other files must be removed
-    if (cleanDistFiles.every((p)=>p.startsWith('!')
+    // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
+    if ($2984c37e9344dbc1$exports.isEmpty(cleanDistFiles) || cleanDistFiles.every((p)=>p.startsWith('!')
     )) {
         const relativeDistPaths = distPaths.map((p)=>$73nkc$posix.resolve(`${p.replace(projectPath, '')}/**/*`)
         );

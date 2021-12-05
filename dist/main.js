@@ -94,18 +94,6 @@ var $1b74867dea2a330b$exports = {};
         cleanDistFiles.push(...sortedFiles);
     }
     const filesToRemove = new Set([]);
-    // if no configuration is provided, then we cleanup all files that are not contained in the current bundle
-    if ($93fdee7582e6e023$exports.isEmpty(cleanDistFiles)) {
-        for (const distPath of distPaths){
-            const fileNames = await $27MRU$fspromises.readdir(distPath); // eslint-disable-line no-await-in-loop
-            fileNames.forEach((fileName)=>{
-                const filePath = $27MRU$path.posix.join(distPath, fileName);
-                if (filesToExclude.includes(filePath)) return;
-                filesToRemove.add(filePath);
-            });
-        }
-        return Array.from(filesToRemove);
-    }
     /**
    * Checks is path contains any of dist folders
    * @param {String} p file path to be checked
@@ -120,8 +108,8 @@ var $1b74867dea2a330b$exports = {};
    */ const isFileExcluded = (fp)=>filesToExclude.includes(fp) || filesToExclude.some((p)=>fp.includes(p) || p.includes(fp)
         )
     ;
-    // when configuration contains only files to exclude, we assume all other files must be removed
-    if (cleanDistFiles.every((p)=>p.startsWith('!')
+    // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
+    if ($93fdee7582e6e023$exports.isEmpty(cleanDistFiles) || cleanDistFiles.every((p)=>p.startsWith('!')
     )) {
         const relativeDistPaths = distPaths.map((p)=>$27MRU$path.posix.resolve(`${p.replace(projectPath, '')}/**/*`)
         );

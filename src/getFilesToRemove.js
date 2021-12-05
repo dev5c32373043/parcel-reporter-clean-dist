@@ -25,21 +25,6 @@ const getFilesToRemove = async (projectPath, distPaths, filesToExclude = []) => 
 
   const filesToRemove = new Set([]);
 
-  // if no configuration is provided, then we cleanup all files that are not contained in the current bundle
-  if (utils.isEmpty(cleanDistFiles)) {
-    for (const distPath of distPaths) {
-      const fileNames = await fs.readdir(distPath); // eslint-disable-line no-await-in-loop
-
-      fileNames.forEach(fileName => {
-        const filePath = path.posix.join(distPath, fileName);
-        if (filesToExclude.includes(filePath)) return;
-        filesToRemove.add(filePath);
-      });
-    }
-
-    return Array.from(filesToRemove);
-  }
-
   /**
    * Checks is path contains any of dist folders
    * @param {String} p file path to be checked
@@ -58,8 +43,8 @@ const getFilesToRemove = async (projectPath, distPaths, filesToExclude = []) => 
     filesToExclude.includes(fp) || filesToExclude.some(p => fp.includes(p) || p.includes(fp))
   );
 
-  // when configuration contains only files to exclude, we assume all other files must be removed
-  if (cleanDistFiles.every(p => p.startsWith('!'))) {
+  // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
+  if (utils.isEmpty(cleanDistFiles) || cleanDistFiles.every(p => p.startsWith('!'))) {
     const relativeDistPaths = distPaths.map(p => path.posix.resolve(`${p.replace(projectPath, '')}/**/*`));
     cleanDistFiles.push(...relativeDistPaths);
   }
