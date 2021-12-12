@@ -7,6 +7,8 @@ const getFilesToRemove = require('./getFilesToRemove');
 const removeFiles = require('./removeFiles');
 const opsLimiter = require('./opsLimiter')();
 
+const normalizePath = p => p.split(path.sep).join(path.posix.sep);
+
 const removeFileReporter = new Reporter({
   async report({ event, options }) {
     if (event.type === 'buildSuccess') {
@@ -15,20 +17,25 @@ const removeFileReporter = new Reporter({
       const filesToExclude = [];
 
       bundles.forEach(b => { // excluding files of the current build from removal
-        if (b.target && b.target.distDir && !distPaths.includes(b.target.distDir)) {
-          distPaths.push(b.target.distDir);
+        const distPath = b.target && b.target.distDir ? normalizePath(b.target.distDir) : null;
+
+        if (utils.isString(distPath) && !distPaths.includes(distPath)) {
+          distPaths.push(distPath);
         }
 
-        if (!filesToExclude.includes(b.filePath)) {
-          filesToExclude.push(b.filePath);
+        const filePath = normalizePath(b.filePath);
+
+        if (!filesToExclude.includes(filePath)) {
+          filesToExclude.push(filePath);
           // excluding .map files as well
-          if (['.js', '.css'].includes(path.extname(b.filePath))) {
-            filesToExclude.push(`${b.filePath}.map`);
+          if (['.js', '.css'].includes(path.extname(filePath))) {
+            filesToExclude.push(`${filePath}.map`);
           }
         }
       });
 
-      const filesToRemove = await getFilesToRemove(options.projectRoot, distPaths, filesToExclude);
+      const projectPath = normalizePath(options.projectRoot);
+      const filesToRemove = await getFilesToRemove(projectPath, distPaths, filesToExclude);
 
       if (!utils.isArray(filesToRemove)) return; // if no files to remove, there is nothing to do for us
 

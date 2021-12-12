@@ -1,6 +1,6 @@
 {
   "name": "parcel-reporter-clean-dist",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Reporter to clean dist files for Parcel v2",
   "keywords": [
     "parcel",
