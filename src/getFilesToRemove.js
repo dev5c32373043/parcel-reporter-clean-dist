@@ -45,7 +45,7 @@ const getFilesToRemove = async (projectPath, distPaths, filesToExclude = []) => 
 
   // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
   if (utils.isEmpty(cleanDistFiles) || cleanDistFiles.every(p => p.startsWith('!'))) {
-    const relativeDistPaths = distPaths.map(p => path.posix.resolve(`${p.replace(projectPath, '')}/**/*`));
+    const relativeDistPaths = distPaths.map(p => path.posix.normalize(`${p.replace(projectPath, '')}/**/*`));
     cleanDistFiles.push(...relativeDistPaths);
   }
 
