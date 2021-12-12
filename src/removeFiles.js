@@ -58,7 +58,7 @@ const recursiveFilesRemoval = async targetPath => {
  */
 
 const removeFiles = _targetPath => {
-  const targetPath = path.posix.resolve(_targetPath);
+  const targetPath = path.posix.normalize(_targetPath);
   return recursiveFilesRemoval(targetPath);
 };
 

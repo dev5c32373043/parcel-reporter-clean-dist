@@ -1,4 +1,4 @@
-import {extname as $73nkc$extname, posix as $73nkc$posix} from "path";
+import {sep as $73nkc$sep, posix as $73nkc$posix, extname as $73nkc$extname} from "path";
 import {Reporter as $73nkc$Reporter} from "@parcel/plugin";
 import {readFile as $73nkc$readFile, rmdir as $73nkc$rmdir, unlink as $73nkc$unlink, stat as $73nkc$stat, readdir as $73nkc$readdir} from "fs/promises";
 import {isDynamicPattern as $73nkc$isDynamicPattern, stream as $73nkc$stream} from "fast-glob";
@@ -112,7 +112,7 @@ var $84aed4f820c8f8ca$exports = {};
     // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
     if ($2984c37e9344dbc1$exports.isEmpty(cleanDistFiles) || cleanDistFiles.every((p)=>p.startsWith('!')
     )) {
-        const relativeDistPaths = distPaths.map((p)=>$73nkc$posix.resolve(`${p.replace(projectPath, '')}/**/*`)
+        const relativeDistPaths = distPaths.map((p)=>$73nkc$posix.normalize(`${p.replace(projectPath, '')}/**/*`)
         );
         cleanDistFiles.push(...relativeDistPaths);
     }
@@ -194,7 +194,7 @@ const $21ce46c797792157$var$recursiveFilesRemoval = async (targetPath)=>{
  * @param {String} _targetPath root directory/file to start from
  * @returns {Promise<void>}
  */ const $21ce46c797792157$var$removeFiles = (_targetPath)=>{
-    const targetPath = $73nkc$posix.resolve(_targetPath);
+    const targetPath = $73nkc$posix.normalize(_targetPath);
     return $21ce46c797792157$var$recursiveFilesRemoval(targetPath);
 };
 $21ce46c797792157$exports = $21ce46c797792157$var$removeFiles;
@@ -217,6 +217,8 @@ module.exports = ()=>({
 
 
 const $7a4dd06e40774cad$var$opsLimiter = (parcelRequire("h0AyS"))();
+const $7a4dd06e40774cad$var$normalizePath = (p)=>p.split($73nkc$sep).join($73nkc$posix.sep)
+;
 const $7a4dd06e40774cad$var$removeFileReporter = new $7a4dd06e40774cad$require$Reporter({
     async report ({ event: event , options: options  }) {
         if (event.type === 'buildSuccess') {
@@ -224,17 +226,20 @@ const $7a4dd06e40774cad$var$removeFileReporter = new $7a4dd06e40774cad$require$R
             const distPaths = [];
             const filesToExclude = [];
             bundles.forEach((b)=>{
-                if (b.target && b.target.distDir && !distPaths.includes(b.target.distDir)) distPaths.push(b.target.distDir);
-                if (!filesToExclude.includes(b.filePath)) {
-                    filesToExclude.push(b.filePath);
+                const distPath = b.target && b.target.distDir ? $7a4dd06e40774cad$var$normalizePath(b.target.distDir) : null;
+                if ($2984c37e9344dbc1$exports.isString(distPath) && !distPaths.includes(distPath)) distPaths.push(distPath);
+                const filePath = $7a4dd06e40774cad$var$normalizePath(b.filePath);
+                if (!filesToExclude.includes(filePath)) {
+                    filesToExclude.push(filePath);
                     // excluding .map files as well
                     if ([
                         '.js',
                         '.css'
-                    ].includes($73nkc$extname(b.filePath))) filesToExclude.push(`${b.filePath}.map`);
+                    ].includes($73nkc$extname(filePath))) filesToExclude.push(`${filePath}.map`);
                 }
             });
-            const filesToRemove = await $84aed4f820c8f8ca$exports(options.projectRoot, distPaths, filesToExclude);
+            const projectPath = $7a4dd06e40774cad$var$normalizePath(options.projectRoot);
+            const filesToRemove = await $84aed4f820c8f8ca$exports(projectPath, distPaths, filesToExclude);
             if (!$2984c37e9344dbc1$exports.isArray(filesToRemove)) return; // if no files to remove, there is nothing to do for us
             filesToRemove.forEach((fileToRemove)=>{
                 const cleanDistFile = ()=>$21ce46c797792157$exports(fileToRemove)
