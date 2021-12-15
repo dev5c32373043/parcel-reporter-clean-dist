@@ -5,6 +5,8 @@ const glob = require('fast-glob');
 
 const utils = require('./utils');
 
+const rootPath = process.cwd().split(path.sep).join(path.posix.sep);
+
 /**
  * Parses file paths for removal.
  * @param {String} projectPath root directory of the project
@@ -45,14 +47,14 @@ const getFilesToRemove = async (projectPath, distPaths, filesToExclude = []) => 
 
   // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
   if (utils.isEmpty(cleanDistFiles) || cleanDistFiles.every(p => p.startsWith('!'))) {
-    const relativeDistPaths = distPaths.map(p => path.posix.normalize(`${p.replace(projectPath, '')}/**/*`));
+    const relativeDistPaths = distPaths.map(p => path.posix.normalize(`${p.replace(rootPath, '')}/**/*`));
     cleanDistFiles.push(...relativeDistPaths);
   }
 
   for (const itemToRemove of cleanDistFiles) {
     if (!utils.isString(itemToRemove)) continue; // eslint-disable-line no-continue
 
-    let filePath = path.posix.join(projectPath, itemToRemove);
+    let filePath = path.posix.join(rootPath, itemToRemove);
 
     if (glob.isDynamicPattern(itemToRemove)) {
       let filesToBeExcluded = false;
