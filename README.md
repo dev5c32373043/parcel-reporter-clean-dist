@@ -59,7 +59,7 @@ If you need to apply specific rules for the cleanup process, then define a confi
 #### cleanDistFiles
 Type: `String[]`<br />
 Default: `${dist folder of the current build}/**/*`<br />
-Glob or relative path from where we clean files (root path taked from Parcel **projectRoot** config key)
+Glob or relative path from where we clean files (root path is the current working directory of the process)
 
 ## Requirements
 * [Node.js][node] 10.0.0+

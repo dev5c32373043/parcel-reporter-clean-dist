@@ -79,6 +79,7 @@ var $84aed4f820c8f8ca$exports = {};
 
 
 
+const $84aed4f820c8f8ca$var$rootPath = process.cwd().split($73nkc$sep).join($73nkc$posix.sep);
 /**
  * Parses file paths for removal.
  * @param {String} projectPath root directory of the project
@@ -112,13 +113,13 @@ var $84aed4f820c8f8ca$exports = {};
     // when no config provided or configuration contains only files to exclude, we assume all other files must be removed
     if ($2984c37e9344dbc1$exports.isEmpty(cleanDistFiles) || cleanDistFiles.every((p)=>p.startsWith('!')
     )) {
-        const relativeDistPaths = distPaths.map((p)=>$73nkc$posix.normalize(`${p.replace(projectPath, '')}/**/*`)
+        const relativeDistPaths = distPaths.map((p)=>$73nkc$posix.normalize(`${p.replace($84aed4f820c8f8ca$var$rootPath, '')}/**/*`)
         );
         cleanDistFiles.push(...relativeDistPaths);
     }
     for (const itemToRemove of cleanDistFiles){
         if (!$2984c37e9344dbc1$exports.isString(itemToRemove)) continue; // eslint-disable-line no-continue
-        let filePath = $73nkc$posix.join(projectPath, itemToRemove);
+        let filePath = $73nkc$posix.join($84aed4f820c8f8ca$var$rootPath, itemToRemove);
         if ($73nkc$isDynamicPattern(itemToRemove)) {
             let filesToBeExcluded = false;
             const globResults = [];
