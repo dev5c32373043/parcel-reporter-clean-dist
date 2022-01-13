@@ -27,7 +27,7 @@ First of all, add a new reporter in the Parcel config.
 ```json
 {
   "extends": ["@parcel/config-default"],
-  "reporters":  ["parcel-reporter-clean-dist"]
+  "reporters":  ["...", "parcel-reporter-clean-dist"] // "..." is needed to include all other pipelines
 }
 ```
 
